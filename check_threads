@@ -1,0 +1,40 @@
+#!/bin/bash
+
+RET_OK=0
+RET_WARN=1
+RET_CRIT=2
+RET_UNKNOWN=3
+
+command="$1"
+min="$2"
+warn="$3"
+crit="$4"
+
+count=`ps auxH | grep $command | wc -l`
+
+if [ $count -lt $min ]
+then
+echo "CRITICAL - $count threads processes/threads with name '$command'"
+exit $RET_CRIT
+fi
+
+if [ $count -ge $min ] && [ $count -lt $warn ]
+then
+echo "THREADS OK: $count processes/threads with name '$command'"
+exit $RET_OK
+fi
+
+if [ $count -ge $warn ] && [ $count -lt $crit ]
+then
+echo "WARNING - $count threads processes/threads with name '$command'"
+exit $RET_WARN
+fi
+
+if [ $count -ge $crit ]
+then
+echo "CRITICAL - $count threads processes/threads with name '$command'"
+exit $RET_CRIT
+fi
+
+echo "UNKNOWN"
+exit $RET_UNKNOWN
